@@ -1,4 +1,4 @@
-module webserver
+module mywebserver
 
 go 1.19
 
