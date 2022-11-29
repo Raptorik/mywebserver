@@ -1,4 +1,4 @@
-module github.com/Raptorik/mywebserver/blob/main/go.mod
+module github.com/Raptorik/mywebserver
 
 go 1.19
 
