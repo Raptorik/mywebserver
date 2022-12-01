@@ -18,9 +18,8 @@ type ControllersSet interface {
 }
 
 type Controller interface {
-	Path() string
-	Name() string
-	DoAction(string)
+	ArtistController() string
+	ExhibitionController() string
 }
 
 func StartServer(cs Controller) {
@@ -35,15 +34,13 @@ func StartServer(cs Controller) {
 		Handler:           router,
 	}
 
-	router.HandleFunc(cs.Path(), func(http.ResponseWriter, *http.Request) {
-		cs.DoAction(`Artist invited`)
+	router.HandleFunc(cs.ArtistController(), func(http.ResponseWriter, *http.Request) {
+		cs.InviteArtist(`Artist invited`)
 	})
-	router.HandleFunc(cs.Path(), func(http.ResponseWriter, *http.Request) {
-		cs.DoAction(`Painting taken off the exhibition`)
+	router.HandleFunc(cs.ExhibitionController(), func(http.ResponseWriter, *http.Request) {
+		cs.OrganizeExhibition(`Exhibition opened`)
 	})
-	router.HandleFunc(cs.Path(), func(http.ResponseWriter, *http.Request) {
-		cs.DoAction(`Exhibition opened`)
-	})
+
 	router.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
 		_, _ = rw.Write([]byte("Hello!"))
 	})
