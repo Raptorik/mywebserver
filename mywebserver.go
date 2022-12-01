@@ -3,40 +3,52 @@ package mywebserver
 import (
 	"context"
 	"errors"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
-type ControllerSet interface {
+type ControllersSet interface {
 	Controllers() []Controller
 }
+
 type Controller interface {
-	path() string
-	OrganizeExhibition()
+	Path() string
+	Name() string
+	DoAction(string)
 }
 
-func StartServer(controllerSet ControllerSet) {
+func StartServer(cs Controller) {
 	ctx := context.Background()
-	rtr := mux.NewRouter()
+	router := mux.NewRouter()
 	srv := &http.Server{
 		Addr:              `0.0.0.0:8080`,
 		ReadTimeout:       time.Millisecond * 200,
 		WriteTimeout:      time.Millisecond * 200,
 		IdleTimeout:       time.Second * 10,
 		ReadHeaderTimeout: time.Millisecond * 200,
-		Handler:           rtr,
+		Handler:           router,
 	}
 
-	for _, c := range controllerSet.Controllers() {
-		rtr.Handle(c.path(), c.OrganizeExhibition())
-	}
+	router.HandleFunc(cs.Path(), func(http.ResponseWriter, *http.Request) {
+		cs.DoAction(`Artist invited`)
+	})
+	router.HandleFunc(cs.Path(), func(http.ResponseWriter, *http.Request) {
+		cs.DoAction(`Painting taken off the exhibition`)
+	})
+	router.HandleFunc(cs.Path(), func(http.ResponseWriter, *http.Request) {
+		cs.DoAction(`Exhibition opened`)
+	})
+	router.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
+		_, _ = rw.Write([]byte("Hello!"))
+	})
 
-	http.Handle("/", rtr)
+	http.Handle("/", router)
 
 	go func() {
 		log.Println(`Web Server started`)
