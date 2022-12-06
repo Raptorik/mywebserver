@@ -1,4 +1,4 @@
-package webservergo
+package mywebserver
 
 import (
 	"context"
